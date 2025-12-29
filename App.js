@@ -1,6 +1,6 @@
 // App.js
 import { View, ActivityIndicator } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, DefaultTheme, DarkTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import LoginScreen from "./screens/LoginScreen";
@@ -8,13 +8,14 @@ import HomeScreen from "./screens/HomeScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { ThemeProvider, useThemeContext } from "./context/ThemeContext";
 
 const Stack = createNativeStackNavigator();
 
 function RootNav() {
   const { isLoading } = useAuth();
+  const { theme } = useThemeContext();
 
-  // Prevent flashing Login before AsyncStorage loads
   if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -24,7 +25,7 @@ function RootNav() {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={theme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack.Navigator>
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
@@ -37,7 +38,9 @@ function RootNav() {
 export default function App() {
   return (
     <AuthProvider>
-      <RootNav />
+      <ThemeProvider>
+        <RootNav />
+      </ThemeProvider>
     </AuthProvider>
   );
 }
